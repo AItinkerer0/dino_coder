@@ -77,15 +77,6 @@ const SPR = {
     '..########..',
     '..#.#..#.#..',
     '..#.#..#.#..']},
-  hero: { p:{'#':'#5fa83a','E':'#141413','W':'#caf08a'}, g:[
-    '......####..',
-    '......#E####',
-    '......######',
-    '....######..',
-    '.#########..',
-    '...#####W#..',
-    '...##.##....',
-    '...##.##....']},
   bug: { p:{'#':'#8fbf6a','E':'#141413'}, g:[
     '.#....#.',
     '..####..',
@@ -334,16 +325,16 @@ function drawThemeBg(TH){
 }
 
 // 전부 공룡으로 도배 — 배경에 흐릿한 공룡 떼 (저알파라 플레이 방해 X, 모든 테마 위에)
-function drawMiniDino(x,y,a,col){
-  ctx.globalAlpha=Math.max(0.05,a);
+// 공룡 한 마리 그리기 (u=픽셀 단위 크기) — 배경 떼·주인공 모두 같은 모양 사용
+function dinoShape(x,y,u,col){
   ctx.fillStyle=col;
-  ctx.fillRect(x+2,y+4,11,5);            // 몸통
-  ctx.fillRect(x+10,y,6,5);              // 머리(우상단)
-  ctx.fillRect(x,y+2,3,2); ctx.fillRect(x+2,y+3,3,2); // 꼬리(좌)
-  ctx.fillRect(x+4,y+9,2,3); ctx.fillRect(x+9,y+9,2,3); // 두 다리
-  ctx.fillStyle='#141413'; ctx.fillRect(x+13,y+1,1,1); // 눈
-  ctx.globalAlpha=1;
+  ctx.fillRect(x+2*u,y+4*u,11*u,5*u);                                  // 몸통
+  ctx.fillRect(x+10*u,y,6*u,5*u);                                      // 머리(우상단)
+  ctx.fillRect(x,y+2*u,3*u,2*u); ctx.fillRect(x+2*u,y+3*u,3*u,2*u);    // 꼬리(좌)
+  ctx.fillRect(x+4*u,y+9*u,2*u,3*u); ctx.fillRect(x+9*u,y+9*u,2*u,3*u);// 두 다리
+  ctx.fillStyle='#141413'; ctx.fillRect(x+13*u,y+1*u,Math.max(1,u),Math.max(1,u)); // 눈
 }
+function drawMiniDino(x,y,a,col){ ctx.globalAlpha=Math.max(0.05,a); dinoShape(x,y,1,col); ctx.globalAlpha=1; }
 function drawDinoMania(){
   const cols=5, rows=5, gx=W/cols, gy=(H-HUD)/rows;
   for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
@@ -857,8 +848,8 @@ function render(){
       ctx.fillStyle='#378add'; ctx.fillRect(sx-7,sy-1,4,3); ctx.fillRect(sx+3,sy-1,4,3); // 솔라 패널 양 날개
       ctx.fillStyle='#d3d1c7'; ctx.fillRect(sx-2,sy-2,4,5); // 본체
       ctx.fillStyle='#85b7eb'; ctx.fillRect(sx-1,sy-1,2,1); } } // 안테나 하이라이트
-  // 플레이어 (공룡 본체 12x8 ×2, 바닥)
-  drawSprite(ctx,SPR.hero,Math.round(px-12),Math.round(PY-8),2);
+  // 플레이어 (배경과 동일한 공룡 모양, ×2 크게·불투명, 바닥)
+  dinoShape(Math.round(px-16),Math.round(PY-16),2,'#5fa83a');
   // 체인 번개 (Cat8) — 지그재그 꺾인 선으로 번개답게(레이저 아님)
   for(const z of zaps){ const a=Math.max(0,1-z.t/0.35);
     const dx=z.x2-z.x1, dy=z.y2-z.y1, len=Math.hypot(dx,dy)||1, nx=-dy/len, ny=dx/len, segs=4;
